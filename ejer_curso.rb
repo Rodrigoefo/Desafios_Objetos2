@@ -1,43 +1,41 @@
+require 'date'
+
 class Course
-require "date"
 
+	attr_reader :name,:start,:finish
 
-  def initialize (name, start, finish)
-    @name=name
-    @start=Date.parse(start)
-    @finish=Date.parse(finish)
+	def initialize(name,start,finish)
+		@name = name
+		@start = Date.parse(start)
+		@finish = Date.parse(finish)
+	end
 
-  end
+	def self.read_file(file = 'curso.txt')
+	    data = File.open(file,'r').readlines.map(&:chomp)
+	    course_objects = []
 
-  def self.read_file(file = 'archivo.txt')
-    data = File.open(file,'r').readlines.map(&:chomp)
-    courses_objects = []
+	    data.each do |line|
+	      course_data = line.split(', ')
+	      course_objects << Course.new(*course_data)
+	    end
 
-    data.each do |line|
-      course_data = line.split(', ')
-      courses_objects << Table.new(*course_data)
-    end
+	    return course_objects
+	end
 
-    return courses_objects
-  end
+	def self.start_at(filter = Date.today)
+		courses = self.read_file
+		selected_courses = courses.select{|course| course.start < filter}
+		print selected_courses.map!{|course|course.name}
+	end
 
-  def self.start_at(filter = Date.today)
-    course=self.read_file
-    
-
-
-  end
+	def self.finish_at(filter = Date.today)
+		courses = self.read_file
+		selected_courses = courses.select{|course| course.finish > filter}
+		print selected_courses.map!{|course|course.name}
+	end
 
 end
 
 Course.read_file
-
-
-
-
-#Crear una clase Course cuyo constructor reciba el nombre del curso y las fechas de inicio y
-#término
-
-
-#Crear un método que permita leer el archivo y crear una instancia de la clase Course por
-#línea del archivo.
+Course.start_at
+Course.finish_at
